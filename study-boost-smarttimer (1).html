@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Study Boost</title>
+  <style>
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --text: #172033;
+  --muted: #69758d;
+  --primary: #4361ee;
+  --primary-soft: #dfe6ff;
+  --success: #16a34a;
+  --success-soft: #ddf7e5;
+  --danger: #dc2626;
+  --border: #e6ebf5;
+  --shadow: 0 10px 30px rgba(26, 39, 68, 0.08);
+}
+
+body.dark {
+  --bg: #0f1727;
+  --card: #172033;
+  --text: #f4f7ff;
+  --muted: #9eaac2;
+  --primary: #7c97ff;
+  --primary-soft: #22305f;
+  --success: #4ade80;
+  --success-soft: #173323;
+  --danger: #f87171;
+  --border: #27324a;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app-shell {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 84px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 16px 16px 12px;
+  background: linear-gradient(to bottom, var(--bg) 85%, transparent);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.topbar h1 { margin: 4px 0 0; font-size: 1.5rem; }
+.eyebrow { margin: 0; color: var(--muted); font-size: 0.82rem; }
+.top-stats { display: flex; gap: 8px; }
+.pill {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.content { padding: 0 16px 24px; }
+.screen { display: none; gap: 12px; flex-direction: column; }
+.screen.active { display: flex; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.section-label {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+blockquote {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.quote-author {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.quote-slider { display: flex; flex-direction: column; gap: 12px; }
+.quote-slide { min-height: 110px; display: flex; flex-direction: column; justify-content: center; }
+.quote-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.quote-nav { border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 999px; width: 40px; height: 40px; font-size: 1.1rem; font-weight: 800; }
+.quote-nav:active { transform: scale(0.98); }
+.quote-dots { display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
+.quote-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--border); }
+.quote-dot.active { background: var(--primary); }
+.quote-counter { font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+.card-row, .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.goal-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.goal-badge.done {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.subtext {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.progress-box { margin-top: 14px; }
+.progress-head { margin-bottom: 8px; color: var(--muted); font-size: 0.9rem; }
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--primary-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-bar > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), #66c7ff);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.mini-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.mini-grid.two-col { grid-template-columns: repeat(2, 1fr); }
+.mini-stat {
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.mini-stat span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+.mini-stat strong { font-size: 1rem; }
+.mini-stat.large strong { font-size: 1.15rem; }
+.ok-banner {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--success-soft);
+  color: var(--success);
+  text-align: center;
+  font-weight: 800;
+}
+.hidden { display: none !important; }
+
+.timer-number {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 10px;
+}
+.timer-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+button, .file-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+button:active, .file-btn:active { transform: scale(0.98); }
+.primary-btn {
+  background: var(--primary);
+  color: white;
+}
+.secondary-btn, .file-btn {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.danger-btn {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--danger);
+}
+.full { width: 100%; margin-top: 10px; display: block; text-align: center; }
+.file-btn input { display: none; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.day-box {
+  padding: 10px 6px;
+  border-radius: 14px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.day-box.active-day {
+  background: var(--success-soft);
+  color: var(--success);
+  font-weight: 800;
+}
+.day-box .day { font-size: 0.8rem; color: var(--muted); }
+.day-box .value { display: block; margin-top: 4px; font-size: 0.85rem; }
+.session-list { display: flex; flex-direction: column; gap: 10px; }
+.list-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.list-item strong { display: block; margin-bottom: 4px; }
+.list-item span { color: var(--muted); font-size: 0.88rem; }
+
+.hero-growth {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hero-growth h2 { margin: 0; font-size: 2rem; }
+.hero-growth p { margin: 6px 0 0; color: var(--muted); font-weight: 700; }
+.hero-xp strong { display: block; font-size: 1.2rem; text-align: right; }
+.hero-xp span { color: var(--muted); font-size: 0.85rem; }
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-item {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rank-item.current {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 800;
+}
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, 100%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(243, 246, 251, 0.92);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+}
+body.dark .bottom-nav { background: rgba(15, 23, 39, 0.92); }
+.nav-btn {
+  padding: 12px 6px;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.nav-btn.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  z-index: 20;
+}
+.modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 96px;
+  background: var(--text);
+  color: var(--card);
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  z-index: 25;
+}
+
+@media (min-width: 420px) {
+  .timer-actions, .modal-actions { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">勉強開始率を上げるアプリ</p>
+        <h1>Study Boost</h1>
+      </div>
+      <div class="top-stats">
+        <div class="pill" id="topRank">F-</div>
+        <div class="pill" id="topLevel">Lv.1</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="screen active" id="screen-home">
+        <div class="card quote-card">
+          <p class="section-label">今日の名言</p>
+          <div class="quote-slider" id="quoteSlider">
+            <div class="quote-slide">
+              <blockquote id="quoteText">読み込み中...</blockquote>
+              <p class="quote-author" id="quoteAuthor"></p>
+            </div>
+            <div class="quote-controls">
+              <button class="quote-nav" id="quotePrevBtn" type="button" aria-label="前の名言">‹</button>
+              <div>
+                <div class="quote-dots">
+                  <span class="quote-dot" id="quoteDot1"></span>
+                  <span class="quote-dot" id="quoteDot2"></span>
+                  <span class="quote-dot" id="quoteDot3"></span>
+                </div>
+                <div class="quote-counter" id="quoteCounter">1 / 3</div>
+              </div>
+              <button class="quote-nav" id="quoteNextBtn" type="button" aria-label="次の名言">›</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card goal-card">
+          <div class="card-row between">
+            <div>
+              <p class="section-label">今日の目標</p>
+              <h2 id="goalTitle">-</h2>
+            </div>
+            <div class="goal-badge" id="goalBadge">進行中</div>
+          </div>
+          <p class="subtext" id="goalHint">-</p>
+          <div class="progress-box">
+            <div class="progress-head between">
+              <span>進捗</span>
+              <span id="goalProgressText">0%</span>
+            </div>
+            <div class="progress-bar"><div id="goalProgressBar"></div></div>
+          </div>
+          <div class="mini-grid">
+            <div class="mini-stat">
+              <span>今日の勉強時間</span>
+              <strong id="todayStudyTime">0分</strong>
+            </div>
+            <div class="mini-stat">
+              <span>今日の回数</span>
+              <strong id="todaySessionCount">0回</strong>
+            </div>
+            <div class="mini-stat">
+              <span>今日のクリア回数</span>
+              <strong id="todayClearCount">0回</strong>
+            </div>
+            <div class="mini-stat">
+              <span>連続記録</span>
+              <strong id="streakCount">0日</strong>
+            </div>
+          </div>
+          <div class="ok-banner hidden" id="okBanner">好きなことしていい</div>
+        </div>
+
+        <div class="card timer-card">
+          <p class="section-label">3分だけ勉強</p>
+          <div class="timer-number" id="timerDisplay">03:00</div>
+          <p class="subtext" id="timerStatus">まだ開始していません</p>
+          <div class="timer-actions">
+            <button class="primary-btn" id="startBtn">3分だけ始める</button>
+            <button class="secondary-btn hidden" id="stopBtn">終了する</button>
+          </div>
+        </div>
+
+        <div class="card stats-card">
+          <p class="section-label">成長</p>
+          <div class="mini-grid two-col">
+            <div class="mini-stat large">
+              <span>現在XP</span>
+              <strong id="xpLabel">0 XP</strong>
+            </div>
+            <div class="mini-stat large">
+              <span>次のレベルまで</span>
+              <strong id="nextLevelXp">20 XP</strong>
+            </div>
+          </div>
+          <div class="progress-box">
+            <div class="progress-bar"><div id="xpProgressBar"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-records">
+        <div class="card">
+          <p class="section-label">記録サマリー</p>
+          <div class="mini-grid two-col">
+            <div class="mini-stat"><span>今日</span><strong id="recordsToday">0分 / 0回</strong></div>
+            <div class="mini-stat"><span>今週</span><strong id="recordsWeek">0分 / 0回</strong></div>
+            <div class="mini-stat"><span>今月</span><strong id="recordsMonth">0分 / 0回</strong></div>
+            <div class="mini-stat"><span>累計</span><strong id="recordsTotal">0分 / 0回</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="section-label">最近30日の記録</p>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="card">
+          <p class="section-label">最近のセッション</p>
+          <div class="session-list" id="sessionList"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-growth">
+        <div class="card">
+          <p class="section-label">現在の成長状況</p>
+          <div class="hero-growth">
+            <div>
+              <h2 id="growthLevel">Lv.1</h2>
+              <p id="growthRank">F-</p>
+            </div>
+            <div class="hero-xp">
+              <strong id="growthTotalXp">0 XP</strong>
+              <span>累計経験値</span>
+            </div>
+          </div>
+          <div class="progress-box">
+            <div class="progress-head between">
+              <span>次のレベルまで</span>
+              <span id="growthNext">20 XP</span>
+            </div>
+            <div class="progress-bar"><div id="growthBar"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="section-label">ランク表</p>
+          <div class="rank-list" id="rankList"></div>
+        </div>
+
+        <div class="card">
+          <p class="section-label">最近の成長ログ</p>
+          <div class="session-list" id="growthLogList"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-settings">
+        <div class="card">
+          <p class="section-label">通知・表示</p>
+          <label class="toggle-row">
+            <span>名言を表示する</span>
+            <input type="checkbox" id="showQuotesToggle" checked />
+          </label>
+          <label class="toggle-row">
+            <span>ダークモード</span>
+            <input type="checkbox" id="darkModeToggle" />
+          </label>
+        </div>
+
+        <div class="card">
+          <p class="section-label">データ管理</p>
+          <button class="secondary-btn full" id="exportBtn">データを書き出す</button>
+          <label class="file-btn full">
+            データを読み込む
+            <input type="file" id="importFile" accept="application/json" />
+          </label>
+          <button class="danger-btn full" id="resetBtn">すべての記録をリセット</button>
+          <p class="subtext">ローカル保存です。書き出しを使えばアップデート後も引き継ぎしやすい設計です。</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-screen="home">ホーム</button>
+      <button class="nav-btn" data-screen="records">記録</button>
+      <button class="nav-btn" data-screen="growth">成長</button>
+      <button class="nav-btn" data-screen="settings">設定</button>
+    </nav>
+  </div>
+
+  <div class="modal hidden" id="continueModal">
+    <div class="modal-card">
+      <p class="section-label">3分達成！</p>
+      <h3>まだ続ける？</h3>
+      <p class="subtext">続けるを押すとタイマーがそのまま進みます。</p>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="finishAfterThreeBtn">ここで終了</button>
+        <button class="primary-btn" id="continueBtn">まだ続ける</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script>
+const STORAGE_KEY = 'study_boost_app_v1';
+
+const QUOTES = [
+  { text: '頑張った事、努力した事は、決して無駄にはならない', author: '小坂菜緒' },
+  { text: '自分を征服することは、最初にして最も気高い勝利である', author: 'プラトン' },
+  { text: '千の戦いに勝つより、自分自身に勝つほうがよい', author: 'ブッダ' },
+  { text: '敵に勝つ者より、欲望に打ち勝つ者のほうが勇敢だ。最も困難な勝利は自己に対する勝利だからだ', author: 'アリストテレス' },
+  { text: '自分を支配できない者は、自由ではない', author: 'ピタゴラス' },
+  { text: '自分をしっかりつかみ、自分を鍛え、自分を支配しなさい', author: 'W. E. B. デュボイス' },
+  { text: '人は物事を支配できなくても、自分自身を支配することは学べる', author: 'ジェームズ・アレン' },
+  { text: '人に勝つより自分に勝て', author: '嘉納治五郎' },
+  { text: '速くなくても、歩幅が小さくても、一歩一歩の重みを感じとって生まれる足跡は、美しい', author: '大野愛実' },
+  { text: '今ここで頑張れないやつに 次とか来年とかあるわけねぇだろ', author: '田中龍之介（ハイキュー!!）' },
+  { text: 'もしも相手が絶対かなわない様な強敵だとしても 勝とうとしなきゃ勝てないよ', author: '澤村大地（ハイキュー!!）' },
+  { text: '人にできて、きみだけにできないなんてことあるもんか', author: 'ドラえもん' },
+  { text: '君達がそこの這いつくばったままならば それこそが弱さの証明です', author: '武田一鉄（ハイキュー!!）' },
+  { text: '逃げるならいつでもできる だが今しかやれんこともある', author: '桂小太郎（銀魂）' },
+  { text: '自分の性分引きずって苦しむくらいならねぇ 自分を変えることに苦しみな 泣くのはそれからだィ', author: 'お登勢（銀魂）' },
+  { text: 'たった一発で強くなろうなんて考えてる連中は…日々地道に鍛錬をくり返す奴等に勝つことなんてできやしないんだ', author: '長谷川泰三（銀魂）' },
+  { text: '本当に現実を生きたいなら…現実と戦いなさいよ', author: '猿飛あやめ（銀魂）' },
+  { text: '他のやつと自分をくらべんな！ まずは自分に勝つことを考えろ！', author: '坂田銀時（銀魂）' },
+  { text: '休みというものは…義務を果たして初めて存在できる', author: '長谷川泰三（銀魂）' },
+  { text: '何かを始めるのに“揺るぎない意志”とか“崇高な動機”なんて無くていい', author: '清水潔子（ハイキュー!!）' },
+  { text: 'スタートに必要なのはチョコっとの好奇心くらいだよ', author: '清水潔子（ハイキュー!!）' },
+  { text: '最初クリアできそうにないゲームでも繰り返すうちに慣れるんだよ', author: '孤爪研磨（ハイキュー!!）' },
+  { text: '逃げる方が 絶対後からしんどいって事は もう知ってる', author: '縁下力（ハイキュー!!）' },
+  { text: '人は皆 自分という檻を破る脱獄囚なのさ', author: '桂小太郎（銀魂）' },
+  { text: '自分に打ち勝つことが、最も偉大な勝利である', author: 'プラトン' }
+];
+
+const GOALS = [
+  { id: 'three_x_five', title: '3分 × 5回', hint: '短く細かく進める日。5回スタートできたら達成。', getProgress: (data, dateKey) => Math.min((getDayStats(data, dateKey).qualifiedSessions / 5) * 100, 100), getText: (data, dateKey) => `${Math.min(getDayStats(data, dateKey).qualifiedSessions, 5)}/5回`, isMet: (data, dateKey) => getDayStats(data, dateKey).qualifiedSessions >= 5 },
+  { id: 'thirty_x_one', title: '30分 × 1回', hint: '1回しっかり集中する日。30分以上のセッションが1回で達成。', getProgress: (data, dateKey) => Math.min((getDayStats(data, dateKey).long30Sessions / 1) * 100, 100), getText: (data, dateKey) => `${Math.min(getDayStats(data, dateKey).long30Sessions, 1)}/1回`, isMet: (data, dateKey) => getDayStats(data, dateKey).long30Sessions >= 1 },
+  { id: 'fifteen_x_two', title: '15分 × 2回', hint: 'バランス型の日。15分以上のセッションを2回で達成。', getProgress: (data, dateKey) => Math.min((getDayStats(data, dateKey).long15Sessions / 2) * 100, 100), getText: (data, dateKey) => `${Math.min(getDayStats(data, dateKey).long15Sessions, 2)}/2回`, isMet: (data, dateKey) => getDayStats(data, dateKey).long15Sessions >= 2 }
+];
+const RANKS = ['F-', 'F', 'F+', 'E-', 'E', 'E+', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'];
+
+const el = {};
+let state = loadState();
+let timerInterval = null;
+let currentQuoteDateKey = '';
+let currentQuotes = [];
+let currentQuoteIndex = 0;
+let session = createEmptySession();
+
+init();
+
+function init() {
+  bindElements();
+  ensureTodaySetup();
+  restoreLiveSession();
+  bindEvents();
+  startUiTicker();
+  render();
+}
+
+function bindElements() {
+  const ids = [
+    'quoteText','quoteAuthor','quotePrevBtn','quoteNextBtn','quoteDot1','quoteDot2','quoteDot3','quoteCounter','goalTitle','goalBadge','goalHint','goalProgressText','goalProgressBar','todayStudyTime','todaySessionCount','todayClearCount','streakCount','okBanner','timerDisplay','timerStatus','startBtn','stopBtn','xpLabel','nextLevelXp','xpProgressBar','recordsToday','recordsWeek','recordsMonth','recordsTotal','calendarGrid','sessionList','growthLevel','growthRank','growthTotalXp','growthNext','growthBar','rankList','growthLogList','showQuotesToggle','darkModeToggle','exportBtn','importFile','resetBtn','continueModal','finishAfterThreeBtn','continueBtn','toast','topRank','topLevel'
+  ];
+  ids.forEach(id => el[id] = document.getElementById(id));
+}
+
+function bindEvents() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+  });
+  el.startBtn.addEventListener('click', startThreeMinuteSession);
+  el.stopBtn.addEventListener('click', stopSession);
+  el.continueBtn.addEventListener('click', continueAfterThree);
+  el.finishAfterThreeBtn.addEventListener('click', finishAfterThree);
+  el.quotePrevBtn.addEventListener('click', () => moveQuote(-1));
+  el.quoteNextBtn.addEventListener('click', () => moveQuote(1));
+  const quoteSlider = document.getElementById('quoteSlider');
+  if (quoteSlider) {
+    let touchStartX = null;
+    quoteSlider.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    quoteSlider.addEventListener('touchend', (e) => {
+      if (touchStartX === null) return;
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaX) > 40) moveQuote(deltaX > 0 ? -1 : 1);
+      touchStartX = null;
+    }, { passive: true });
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      reconcileLiveSession();
+      render();
+    } else {
+      persistLiveSession();
+    }
+  });
+  window.addEventListener('pageshow', () => {
+    reconcileLiveSession();
+    render();
+  });
+  window.addEventListener('pagehide', persistLiveSession);
+
+  el.showQuotesToggle.addEventListener('change', () => {
+    state.settings.showQuotes = el.showQuotesToggle.checked;
+    saveState();
+    render();
+  });
+  el.darkModeToggle.addEventListener('change', () => {
+    state.settings.darkMode = el.darkModeToggle.checked;
+    saveState();
+    render();
+  });
+  el.exportBtn.addEventListener('click', exportData);
+  el.importFile.addEventListener('change', importData);
+  el.resetBtn.addEventListener('click', () => {
+    if (!confirm('すべての記録を消します。よろしいですか？')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    state = loadState();
+    resetLiveSession();
+    ensureTodaySetup();
+    render();
+    toast('記録をリセットしました');
+  });
+}
+
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+  document.querySelector(`#screen-${name}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === name));
+}
+
+
+function startThreeMinuteSession() {
+  if (session.running) return;
+  ensureTodaySetup();
+  session = createEmptySession();
+  session.running = true;
+  session.startedAt = new Date().toISOString();
+  session.mode = 'three';
+  persistLiveSession();
+  updateTimerUi();
+  render();
+}
+
+function startUiTicker() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!session.running) return;
+    reconcileLiveSession(false);
+    updateTimerUi();
+  }, 1000);
+}
+
+function reconcileLiveSession(shouldToast = true) {
+  if (!session.startedAt) return;
+  if (session.mode === 'three') {
+    const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+    if (elapsedSec >= 180) {
+      awardThreeMinute(shouldToast);
+    }
+  } else if (session.mode === 'continued' || session.mode === 'awaiting_continue') {
+    processContinuousAwards(shouldToast);
+  }
+  persistLiveSession();
+}
+
+function getSessionElapsedMs(now = Date.now()) {
+  if (!session.startedAt) return 0;
+  const startedAtMs = new Date(session.startedAt).getTime();
+  if (session.mode === 'continued') {
+    const continuedAtMs = session.continuedAt ? new Date(session.continuedAt).getTime() : startedAtMs + 180000;
+    return 180000 + Math.max(now - continuedAtMs, 0);
+  }
+  if (session.mode === 'awaiting_continue') {
+    return Math.max(now - startedAtMs, 0);
+  }
+  return Math.max(now - startedAtMs, 0);
+}
+
+function getDisplaySeconds() {
+  const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+  if (session.mode === 'three') return Math.max(180 - elapsedSec, 0);
+  return elapsedSec;
+}
+
+function processContinuousAwards(shouldToast = true) {
+  const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+  const extraAwards = Math.max(Math.floor((elapsedSec - 180) / 1800), 0);
+  if (extraAwards > session.thirtyMinuteAwards) {
+    const diff = extraAwards - session.thirtyMinuteAwards;
+    state.user.totalXp += diff * 30;
+    appendGrowthLog(`30分継続で +${diff * 30}XP`);
+    session.thirtyMinuteAwards = extraAwards;
+    saveState();
+    if (shouldToast) toast(`30分継続で +${diff * 30}XP`);
+  }
+}
+
+function awardThreeMinute(shouldToast = true) {
+  if (session.threeMinuteAwarded) return;
+  session.threeMinuteAwarded = true;
+  session.running = true;
+  session.mode = 'awaiting_continue';
+  state.user.totalXp += 10;
+  appendGrowthLog('3分達成で +10XP');
+  saveState();
+  if (shouldToast) toast('3分達成で +10XP');
+}
+
+function continueAfterThree() {
+  if (!session.startedAt || !session.threeMinuteAwarded) return;
+  session.running = true;
+  session.mode = 'continued';
+  session.continuedAt = session.continuedAt || new Date(new Date(session.startedAt).getTime() + 180000).toISOString();
+  persistLiveSession();
+  updateTimerUi();
+  render();
+}
+
+function finishAfterThree() {
+  stopSession();
+}
+
+function stopSession() {
+  if (!session.startedAt) return;
+  reconcileLiveSession(false);
+  const minutes = Math.max(Math.round((getSessionElapsedMs() / 60000) * 10) / 10, 0);
+  commitSession(minutes);
+  resetLiveSession();
+  render();
+}
+
+function commitSession(minutes) {
+  const safeMinutes = Math.max(Math.round(minutes * 10) / 10, 0);
+  if (safeMinutes <= 0) return;
+  ensureTodaySetup();
+  const dateKey = todayKey();
+  const startedAtIso = session.startedAt || new Date().toISOString();
+  const endedAtIso = new Date().toISOString();
+  state.sessions.unshift({
+    id: `${Date.now()}`,
+    dateKey,
+    startedAt: startedAtIso,
+    endedAt: endedAtIso,
+    minutes: safeMinutes
+  });
+  state.sessions = state.sessions.slice(0, 300);
+
+  updateStreak();
+  processGoalAndHours(dateKey);
+  saveState();
+  toast(`${formatMinutes(safeMinutes)} 勉強を記録した`);
+}
+
+function resetLiveSession() {
+  session = createEmptySession();
+  delete state.liveSession;
+  saveState();
+  updateTimerUi();
+}
+
+function updateTimerUi() {
+  const showContinue = session.mode === 'awaiting_continue';
+  const showStop = !!session.startedAt;
+  el.startBtn.classList.toggle('hidden', showStop);
+  el.stopBtn.classList.toggle('hidden', !showStop);
+  el.continueModal.classList.toggle('hidden', !showContinue);
+
+  if (!session.startedAt) {
+    el.timerDisplay.textContent = '03:00';
+    el.timerStatus.textContent = 'まだ開始していません';
+    return;
+  }
+
+  if (session.mode === 'three') {
+    el.timerDisplay.textContent = formatClock(getDisplaySeconds());
+    el.timerStatus.textContent = '最初の3分をカウント中';
+    return;
+  }
+
+  if (session.mode === 'awaiting_continue') {
+    const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+    el.timerDisplay.textContent = formatClock(elapsedSec);
+    el.timerStatus.textContent = `3分達成！ タイマー継続中 ${formatMinutes(elapsedSec / 60)}`;
+    return;
+  }
+
+  const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+  el.timerDisplay.textContent = formatClock(elapsedSec);
+  el.timerStatus.textContent = `継続中 ${formatMinutes(elapsedSec / 60)}`;
+}
+
+function createEmptySession() {
+  return {
+    running: false,
+    startedAt: null,
+    continuedAt: null,
+    mode: 'idle',
+    threeMinuteAwarded: false,
+    thirtyMinuteAwards: 0
+  };
+}
+
+function persistLiveSession() {
+  if (session.startedAt) {
+    state.liveSession = {
+      running: !!session.running,
+      startedAt: session.startedAt,
+      continuedAt: session.continuedAt || null,
+      mode: session.mode,
+      threeMinuteAwarded: !!session.threeMinuteAwarded,
+      thirtyMinuteAwards: Number(session.thirtyMinuteAwards || 0)
+    };
+  } else {
+    delete state.liveSession;
+  }
+  saveState();
+}
+
+function restoreLiveSession() {
+  if (state.liveSession?.startedAt) {
+    session = {
+      running: !!state.liveSession.running,
+      startedAt: state.liveSession.startedAt,
+      continuedAt: state.liveSession.continuedAt || null,
+      mode: state.liveSession.mode || 'three',
+      threeMinuteAwarded: !!state.liveSession.threeMinuteAwarded,
+      thirtyMinuteAwards: Number(state.liveSession.thirtyMinuteAwards || 0)
+    };
+    reconcileLiveSession(false);
+    updateTimerUi();
+  } else {
+    session = createEmptySession();
+    updateTimerUi();
+  }
+}
+
+function render() {
+  ensureTodaySetup();
+  reconcileLiveSession(false);
+  updateTimerUi();
+  document.body.classList.toggle('dark', !!state.settings.darkMode);
+  el.showQuotesToggle.checked = !!state.settings.showQuotes;
+  el.darkModeToggle.checked = !!state.settings.darkMode;
+
+  renderHome();
+  renderRecords();
+  renderGrowth();
+}
+
+function renderHome() {
+  const dateKey = todayKey();
+  const goal = getTodayGoal();
+  const dayStats = getDayStats(state, dateKey);
+  const dailyMeta = state.daily[dateKey];
+  const { level, currentLevelXp, nextLevelRequired, rank } = getProgress(state.user.totalXp);
+  const quotes = state.settings.showQuotes
+    ? getQuotesForDate(dateKey, 3)
+    : [
+        { text: '名言表示はオフです。', author: '' },
+        { text: '設定からいつでも表示を戻せます。', author: '' },
+        { text: '今日は目標と3分ボタンに集中しよう。', author: '' }
+      ];
+
+  if (currentQuoteDateKey !== dateKey || JSON.stringify(currentQuotes) !== JSON.stringify(quotes)) {
+    currentQuoteDateKey = dateKey;
+    currentQuotes = quotes;
+    currentQuoteIndex = 0;
+  }
+  renderQuoteSlider();
+  el.goalTitle.textContent = goal.title;
+  el.goalHint.textContent = `${goal.hint} / 進捗 ${goal.getText(state, dateKey)}`;
+  const progress = goal.getProgress(state, dateKey);
+  el.goalProgressText.textContent = `${Math.round(progress)}%`;
+  el.goalProgressBar.style.width = `${progress}%`;
+
+  const clearCount = getClearCount(dateKey);
+  const goalMet = goal.isMet(state, dateKey);
+  el.goalBadge.textContent = goalMet ? '達成' : '進行中';
+  el.goalBadge.classList.toggle('done', goalMet);
+
+  el.todayStudyTime.textContent = formatMinutes(dayStats.totalMinutes);
+  el.todaySessionCount.textContent = `${dayStats.sessionCount}回`;
+  el.todayClearCount.textContent = `${clearCount}回`;
+  el.streakCount.textContent = `${state.user.streak}日`;
+  el.okBanner.classList.toggle('hidden', clearCount === 0);
+
+  el.xpLabel.textContent = `${state.user.totalXp} XP`;
+  el.nextLevelXp.textContent = `${nextLevelRequired - currentLevelXp} XP`;
+  el.xpProgressBar.style.width = `${(currentLevelXp / nextLevelRequired) * 100}%`;
+  el.topRank.textContent = rank;
+  el.topLevel.textContent = `Lv.${level}`;
+}
+
+
+function renderQuoteSlider() {
+  const quotes = currentQuotes.length ? currentQuotes : [{ text: '名言はありません。', author: '' }];
+  if (currentQuoteIndex >= quotes.length) currentQuoteIndex = 0;
+  if (currentQuoteIndex < 0) currentQuoteIndex = quotes.length - 1;
+  const quote = quotes[currentQuoteIndex];
+  el.quoteText.textContent = quote.text || '';
+  el.quoteAuthor.textContent = quote.author ? `— ${quote.author}` : '';
+  [1, 2, 3].forEach((num, idx) => {
+    el[`quoteDot${num}`].classList.toggle('active', idx === currentQuoteIndex);
+    el[`quoteDot${num}`].style.visibility = idx < quotes.length ? 'visible' : 'hidden';
+  });
+  el.quoteCounter.textContent = `${Math.min(currentQuoteIndex + 1, quotes.length)} / ${quotes.length}`;
+}
+
+function moveQuote(direction) {
+  if (!currentQuotes.length) return;
+  currentQuoteIndex = (currentQuoteIndex + direction + currentQuotes.length) % currentQuotes.length;
+  renderQuoteSlider();
+}
+
+function renderRecords() {
+  const today = todayKey();
+  const week = aggregateRange(7);
+  const month = aggregateRange(30);
+  const total = state.sessions.reduce((acc, s) => {
+    acc.minutes += s.minutes;
+    acc.sessions += 1;
+    return acc;
+  }, { minutes: 0, sessions: 0 });
+  const todayStats = getDayStats(state, today);
+
+  el.recordsToday.textContent = `${formatMinutes(todayStats.totalMinutes)} / ${todayStats.sessionCount}回`;
+  el.recordsWeek.textContent = `${formatMinutes(week.minutes)} / ${week.sessions}回`;
+  el.recordsMonth.textContent = `${formatMinutes(month.minutes)} / ${month.sessions}回`;
+  el.recordsTotal.textContent = `${formatMinutes(total.minutes)} / ${total.sessions}回`;
+
+  renderCalendar();
+  renderSessionList();
+}
+
+function renderGrowth() {
+  const { level, currentLevelXp, nextLevelRequired, rank } = getProgress(state.user.totalXp);
+  el.growthLevel.textContent = `Lv.${level}`;
+  el.growthRank.textContent = rank;
+  el.growthTotalXp.textContent = `${state.user.totalXp} XP`;
+  el.growthNext.textContent = `${nextLevelRequired - currentLevelXp} XP`;
+  el.growthBar.style.width = `${(currentLevelXp / nextLevelRequired) * 100}%`;
+
+  el.rankList.innerHTML = '';
+  RANKS.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = `rank-item ${r === rank ? 'current' : ''}`;
+    const minLv = i * 3 + 1;
+    const maxLv = i * 3 + 3;
+    div.innerHTML = `<span>${r}</span><span>Lv.${minLv}〜${maxLv}</span>`;
+    el.rankList.appendChild(div);
+  });
+
+  const logs = state.growthLog.slice(0, 20);
+  el.growthLogList.innerHTML = logs.length ? '' : `<div class="list-item"><strong>まだログがありません</strong><span>勉強するとここに成長ログが出ます。</span></div>`;
+  logs.forEach(log => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.innerHTML = `<strong>${log.message}</strong><span>${formatDateTime(log.at)}</span>`;
+    el.growthLogList.appendChild(div);
+  });
+}
+
+function renderCalendar() {
+  const items = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = shiftDate(new Date(), -i);
+    const key = dateKeyFromDate(d);
+    const stats = getDayStats(state, key);
+    items.push({ day: `${d.getMonth() + 1}/${d.getDate()}`, minutes: stats.totalMinutes, active: stats.totalMinutes >= 3 });
+  }
+  el.calendarGrid.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = `day-box ${item.active ? 'active-day' : ''}`;
+    div.innerHTML = `<span class="day">${item.day}</span><span class="value">${item.minutes ? formatMinutes(item.minutes) : '-'}</span>`;
+    el.calendarGrid.appendChild(div);
+  });
+}
+
+function renderSessionList() {
+  const items = state.sessions.slice(0, 12);
+  el.sessionList.innerHTML = items.length ? '' : `<div class="list-item"><strong>まだ記録がありません</strong><span>最初の3分を始めよう。</span></div>`;
+  items.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.innerHTML = `<strong>${formatMinutes(s.minutes)} 勉強</strong><span>${formatDateTime(s.startedAt)}</span>`;
+    el.sessionList.appendChild(div);
+  });
+}
+
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
+}
+
+function getQuotesForDate(dateKey, count = 3) {
+  const base = hashString(dateKey);
+  const picked = [];
+  const used = new Set();
+  let step = 0;
+  while (picked.length < Math.min(count, QUOTES.length) && step < QUOTES.length * 3) {
+    const index = Math.abs(base + step * 7 + step * step) % QUOTES.length;
+    if (!used.has(index)) {
+      used.add(index);
+      picked.push(QUOTES[index]);
+    }
+    step += 1;
+  }
+  return picked;
+}
+
+function ensureTodaySetup() {
+  const key = todayKey();
+  if (!state.daily[key]) {
+    state.daily[key] = {
+      goalId: GOALS[new Date(key).getDate() % GOALS.length].id,
+      goalClearAwarded: false,
+      hourAwards: 0
+    };
+    saveState();
+  }
+}
+
+function getTodayGoal() {
+  return GOALS.find(g => g.id === state.daily[todayKey()].goalId) || GOALS[0];
+}
+
+function getDayStats(data, dateKey) {
+  const sessions = data.sessions.filter(s => s.dateKey === dateKey);
+  const totalMinutes = sessions.reduce((sum, s) => sum + s.minutes, 0);
+  const qualifiedSessions = sessions.filter(s => s.minutes >= 3).length;
+  const long15Sessions = sessions.filter(s => s.minutes >= 15).length;
+  const long30Sessions = sessions.filter(s => s.minutes >= 30).length;
+  return { totalMinutes, sessionCount: sessions.length, qualifiedSessions, long15Sessions, long30Sessions };
+}
+
+function getClearCount(dateKey) {
+  const meta = state.daily[dateKey];
+  return (meta?.goalClearAwarded ? 1 : 0) + (meta?.hourAwards || 0);
+}
+
+function aggregateRange(days) {
+  const set = new Set();
+  for (let i = 0; i < days; i++) set.add(dateKeyFromDate(shiftDate(new Date(), -i)));
+  return state.sessions.reduce((acc, s) => {
+    if (set.has(s.dateKey)) {
+      acc.minutes += s.minutes;
+      acc.sessions += 1;
+    }
+    return acc;
+  }, { minutes: 0, sessions: 0 });
+}
+
+function updateStreak() {
+  let streak = 0;
+  let cursor = new Date();
+  while (true) {
+    const key = dateKeyFromDate(cursor);
+    const stats = getDayStats(state, key);
+    if (stats.totalMinutes >= 3) {
+      streak += 1;
+      cursor = shiftDate(cursor, -1);
+    } else {
+      break;
+    }
+  }
+  state.user.streak = streak;
+}
+
+function appendGrowthLog(message) {
+  state.growthLog.unshift({ at: new Date().toISOString(), message });
+  state.growthLog = state.growthLog.slice(0, 100);
+}
+
+function getProgress(totalXp) {
+  let level = 1;
+  let remaining = totalXp;
+  while (remaining >= level * 20) {
+    remaining -= level * 20;
+    level += 1;
+  }
+  const nextLevelRequired = level * 20;
+  const rankIndex = Math.min(Math.floor((level - 1) / 3), RANKS.length - 1);
+  return {
+    level,
+    currentLevelXp: remaining,
+    nextLevelRequired,
+    rank: RANKS[rankIndex]
+  };
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `study-boost-backup-${todayKey()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      state = sanitizeState(imported);
+      saveState();
+      resetLiveSession();
+      render();
+      toast('データを読み込みました');
+    } catch {
+      toast('読み込みに失敗しました');
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return defaultState();
+  try {
+    return sanitizeState(JSON.parse(raw));
+  } catch {
+    return defaultState();
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function defaultState() {
+  return {
+    user: { totalXp: 0, streak: 0 },
+    sessions: [],
+    daily: {},
+    growthLog: [],
+    settings: { showQuotes: true, darkMode: false },
+    liveSession: null
+  };
+}
+
+function sanitizeState(input) {
+  const base = defaultState();
+  return {
+    user: {
+      totalXp: Number(input?.user?.totalXp || 0),
+      streak: Number(input?.user?.streak || 0)
+    },
+    sessions: Array.isArray(input?.sessions) ? input.sessions.map(s => ({
+      id: String(s.id || Date.now()),
+      dateKey: String(s.dateKey || todayKey()),
+      startedAt: s.startedAt || new Date().toISOString(),
+      endedAt: s.endedAt || new Date().toISOString(),
+      minutes: Number(s.minutes || 0)
+    })) : base.sessions,
+    daily: typeof input?.daily === 'object' && input.daily ? input.daily : {},
+    growthLog: Array.isArray(input?.growthLog) ? input.growthLog.slice(0, 100) : [],
+    settings: {
+      showQuotes: input?.settings?.showQuotes !== false,
+      darkMode: !!input?.settings?.darkMode
+    },
+    liveSession: input?.liveSession?.startedAt ? {
+      running: !!input.liveSession.running,
+      startedAt: input.liveSession.startedAt,
+      continuedAt: input.liveSession.continuedAt || null,
+      mode: input.liveSession.mode || 'three',
+      threeMinuteAwarded: !!input.liveSession.threeMinuteAwarded,
+      thirtyMinuteAwards: Number(input.liveSession.thirtyMinuteAwards || 0)
+    } : null
+  };
+}
+
+function todayKey() { return dateKeyFromDate(new Date()); }
+function dateKeyFromDate(date) {
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, '0');
+  const d = `${date.getDate()}`.padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+function shiftDate(date, diff) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + diff);
+  return copy;
+}
+function formatClock(sec) {
+  const safe = Math.max(Math.floor(sec), 0);
+  const min = `${Math.floor(safe / 60)}`.padStart(2, '0');
+  const s = `${safe % 60}`.padStart(2, '0');
+  return `${min}:${s}`;
+}
+function formatMinutes(minutes) {
+  const safe = Math.round(minutes);
+  const h = Math.floor(safe / 60);
+  const m = safe % 60;
+  if (h > 0 && m > 0) return `${h}時間${m}分`;
+  if (h > 0) return `${h}時間`;
+  return `${m}分`;
+}
+function formatDateTime(iso) {
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}/${d.getDate()} ${`${d.getHours()}`.padStart(2,'0')}:${`${d.getMinutes()}`.padStart(2,'0')}`;
+}
+
+let toastTimer = null;
+function toast(message) {
+  el.toast.textContent = message;
+  el.toast.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.add('hidden'), 2200);
+}
+
+</script>
+</body>
+</html>
