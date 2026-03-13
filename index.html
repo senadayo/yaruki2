@@ -776,8 +776,10 @@ function finishAfterThree() {
 
 function stopSession() {
   if (!session.startedAt) return;
+  // 停止操作時は必ず現在までの経過を反映してから保存し、liveSession を消す
   reconcileLiveSession(false);
   const minutes = Math.max(Math.round((getSessionElapsedMs() / 60000) * 10) / 10, 0);
+  session.running = false;
   commitSession(minutes);
   resetLiveSession();
   render();
@@ -1096,6 +1098,28 @@ function getDayStats(data, dateKey) {
 function getClearCount(dateKey) {
   const meta = state.daily[dateKey];
   return (meta?.goalClearAwarded ? 1 : 0) + (meta?.hourAwards || 0);
+}
+
+function processGoalAndHours(dateKey) {
+  ensureTodaySetup();
+  const goal = getTodayGoal();
+  const dayStats = getDayStats(state, dateKey);
+  const dailyMeta = state.daily[dateKey];
+  if (!dailyMeta) return;
+
+  if (!dailyMeta.goalClearAwarded && goal.isMet(state, dateKey)) {
+    dailyMeta.goalClearAwarded = true;
+    state.user.totalXp += 20;
+    appendGrowthLog('今日の目標達成で +20XP');
+  }
+
+  const hourMilestones = Math.floor(dayStats.totalMinutes / 60);
+  if (hourMilestones > (dailyMeta.hourAwards || 0)) {
+    const diff = hourMilestones - (dailyMeta.hourAwards || 0);
+    dailyMeta.hourAwards = hourMilestones;
+    state.user.totalXp += diff * 20;
+    appendGrowthLog(`1時間達成 ×${diff} で +${diff * 20}XP`);
+  }
 }
 
 function aggregateRange(days) {
