@@ -698,7 +698,7 @@ function startThreeMinuteSession() {
 function startUiTicker() {
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
-    if (!session.running && session.mode !== 'awaiting_continue') return;
+    if (!session.running) return;
     reconcileLiveSession(false);
     updateTimerUi();
   }, 1000);
@@ -711,7 +711,7 @@ function reconcileLiveSession(shouldToast = true) {
     if (elapsedSec >= 180) {
       awardThreeMinute(shouldToast);
     }
-  } else if (session.mode === 'continued') {
+  } else if (session.mode === 'continued' || session.mode === 'awaiting_continue') {
     processContinuousAwards(shouldToast);
   }
   persistLiveSession();
@@ -725,7 +725,7 @@ function getSessionElapsedMs(now = Date.now()) {
     return 180000 + Math.max(now - continuedAtMs, 0);
   }
   if (session.mode === 'awaiting_continue') {
-    return 180000;
+    return Math.max(now - startedAtMs, 0);
   }
   return Math.max(now - startedAtMs, 0);
 }
@@ -752,7 +752,7 @@ function processContinuousAwards(shouldToast = true) {
 function awardThreeMinute(shouldToast = true) {
   if (session.threeMinuteAwarded) return;
   session.threeMinuteAwarded = true;
-  session.running = false;
+  session.running = true;
   session.mode = 'awaiting_continue';
   state.user.totalXp += 10;
   appendGrowthLog('3分達成で +10XP');
@@ -764,7 +764,7 @@ function continueAfterThree() {
   if (!session.startedAt || !session.threeMinuteAwarded) return;
   session.running = true;
   session.mode = 'continued';
-  session.continuedAt = new Date().toISOString();
+  session.continuedAt = session.continuedAt || new Date(new Date(session.startedAt).getTime() + 180000).toISOString();
   persistLiveSession();
   updateTimerUi();
   render();
@@ -789,9 +789,7 @@ function commitSession(minutes) {
   ensureTodaySetup();
   const dateKey = todayKey();
   const startedAtIso = session.startedAt || new Date().toISOString();
-  const endedAtIso = session.mode === 'awaiting_continue' && session.startedAt
-    ? new Date(new Date(session.startedAt).getTime() + 180000).toISOString()
-    : new Date().toISOString();
+  const endedAtIso = new Date().toISOString();
   state.sessions.unshift({
     id: `${Date.now()}`,
     dateKey,
@@ -834,8 +832,9 @@ function updateTimerUi() {
   }
 
   if (session.mode === 'awaiting_continue') {
-    el.timerDisplay.textContent = '03:00';
-    el.timerStatus.textContent = '3分達成！ 続けるか選んでください';
+    const elapsedSec = Math.floor(getSessionElapsedMs() / 1000);
+    el.timerDisplay.textContent = formatClock(elapsedSec);
+    el.timerStatus.textContent = `3分達成！ タイマー継続中 ${formatMinutes(elapsedSec / 60)}`;
     return;
   }
 
